@@ -1,0 +1,11 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/components/%appname%.js",
+  "extraDependencies": [
+    "manifest.json",
+    "node_modules/@webcomponents/webcomponentsjs/**",
+    "push-manifest.json"
+  ],
+  "moduleResolution": "node",
+  "npm": true
+}

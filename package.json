@@ -1,0 +1,7 @@
+{
+  "name": "test-app",
+  "dependencies": {
+    "@polymer/lit-element": "^0.5.1",
+    "@webcomponents/webcomponentsjs": "^2.0.0"
+  }
+}
