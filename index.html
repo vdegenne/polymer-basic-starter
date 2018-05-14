@@ -8,13 +8,27 @@
   <title>%appname%</title>
   <meta name="description" content="%description%">
 
-  <style>
-    a {
-      color: #03a9f4;
+  <script>
+    // Load and register pre-caching Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('service-worker.js', {
+          scope: '/',
+        });
+      });
     }
 
-    code {
-      color: blue;
+    // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
+    // https://github.com/reactjs/redux/issues/2907
+    window.process = { env: { NODE_ENV: 'production' } };
+  </script>
+
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto';
     }
   </style>
 </head>
