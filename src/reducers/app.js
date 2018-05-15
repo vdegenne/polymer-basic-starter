@@ -1,4 +1,5 @@
-import { UPDATE_PAGE, UPDATE_OFFLINE, OPEN_SNACKBAR, CLOSE_SNACKBAR, UPDATE_DRAWER_STATE } from '../actions/app.js';
+import { UPDATE_PAGE, UPDATE_OFFLINE, OPEN_SNACKBAR, CLOSE_SNACKBAR, UPDATE_DRAWER_STATE, UPDATE_APP_BAR_TITLE } from '../actions/app.js';
+
 
 const app = (state = { drawerOpened: false }, action) => {
   switch (action.type) {
@@ -26,6 +27,11 @@ const app = (state = { drawerOpened: false }, action) => {
       return {
         ...state,
         snackbarOpened: false
+      };
+    case UPDATE_APP_BAR_TITLE:
+      return {
+        ...state,
+        appBarTitle: action.title
       };
     default:
       return state;

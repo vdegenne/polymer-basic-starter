@@ -3,6 +3,7 @@ export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_DRAWER_STATE = 'UPDATE_DRAWER_STATE';
 export const OPEN_SNACKBAR = 'OPEN_SNACKBAR';
 export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
+export const UPDATE_APP_BAR_TITLE = 'UPDATE_APP_BAR_TITLE';
 
 
 export const navigate = (path) => (dispatch) => {
@@ -82,3 +83,15 @@ export const updateDrawerState = (opened) => (dispatch, getState) => {
     });
   }
 }
+
+
+export const updateAppBarTitle = (title) => (dispatch) => {
+  dispatch({
+    type: UPDATE_APP_BAR_TITLE,
+    title
+  });
+}
+
+window.updateAppBarTitle = (title) => {
+  window.store.dispatch(updateAppBarTitle(title));
+};

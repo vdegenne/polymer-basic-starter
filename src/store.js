@@ -20,3 +20,5 @@ export const store = createStore(
 
 // Initially loaded reducers.
 store.addReducers({ app });
+
+window.store = store;
