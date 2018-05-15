@@ -7,6 +7,40 @@ class MyView2 extends connect(store)(LitElement) {
   _render(props) {
     return html`
     <h1>view 2</h1>
+    <h1>view 2</h1>
+    <h1>view 2</h1>
+    <h1>view 2</h1>
+    <h1>view 2</h1>
+    <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
+        <h1>view 2</h1>
     `;
   }
   static get properties() {

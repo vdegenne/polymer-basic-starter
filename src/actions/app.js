@@ -82,16 +82,3 @@ export const updateDrawerState = (opened) => (dispatch, getState) => {
     });
   }
 }
-
-
-
-// TO REMOVE
-export const UPDATE_COUNTER = 'UPDATE_COUNTER';
-
-// update
-export const update = (count) => (dispatch) => {
-  dispatch({
-    type: UPDATE_COUNTER,
-    count
-  });
-};
