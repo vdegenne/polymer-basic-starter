@@ -8,7 +8,7 @@ class MyView1 extends connect(store)(LitElement) {
     return html`
      ${SharedStyles}
     <h1>view 1</h1>
-    <p>This is the view 1</p>
+    <p>If you see this view, it means you successfully installed the <code>polymer-basic-starter</code> starter.</p>
     `;
   }
   static get properties() {
