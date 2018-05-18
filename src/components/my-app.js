@@ -3,6 +3,7 @@ import '@polymer/app-layout/app-toolbar/app-toolbar';
 import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/paper-styles/paper-styles';
 import '@material/mwc-icon';
+import '@material/mwc-button';
 
 import { html, LitElement } from '@polymer/lit-element';
 import { connect } from 'pwa-helpers';
@@ -135,9 +136,11 @@ class MyApp extends connect
       </nav>
     </app-drawer>
     
+    
     <main class="main-content">
       <my-view1 class="page" active?="${_page === 'view1'}"></my-view1>
       <my-view2 class="page" active?="${_page === 'view2'}"></my-view2>
+      <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
     </main>
     `;
   }
