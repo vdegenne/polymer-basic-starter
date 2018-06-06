@@ -4,25 +4,30 @@ import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/paper-styles/paper-styles';
 import '@material/mwc-icon';
 import '@material/mwc-button';
+import '@polymer/paper-toast/paper-toast';
+
 
 import { html, LitElement } from '@polymer/lit-element';
 import { connect } from 'pwa-helpers';
 import { installRouter } from 'pwa-helpers';
-
+import {SharedStyles} from './shared-styles';
 import { navigate, updateDrawerState, updateAppBarTitle } from '../actions/app';
 import { store } from '../store';
 
-class MyApp extends connect
-  (store)(LitElement) {
+
+export let toast;
+
+class MyApp extends connect(store)(LitElement) {
+  
   _render({ _appBarTitle, searchMode, _page, _drawerOpened }) {
 
-    const menuAddon = html`<mwc-icon id="menuToggler" on-click="${_ => store.dispatch(updateDrawerState(true))}">menu</mwc-icon>`;
-    const searchAddon = html`<mwc-icon on-click="${_ => this.enterSearchMode()}">search</mwc-icon>`;
-
     return html`
+    ${SharedStyles}
     <style>
       :host {
-        --app-header-background-color: #424242;
+        --app-primary-color: #424242;
+        --app-second-color: #29462a;
+        --app-header-background-color: var(--app-primary-color);
         --app-header-text-color: #ffffff;
     
         --app-drawer-background-color: #f5f5f5;
@@ -39,11 +44,11 @@ class MyApp extends connect
         color: var(--app-header-text-color);
       }
     
-      app-toolbar {
-        max-width: 600px;
-        margin: 0 auto;
+      app-drawer {
+        z-index: 100;
       }
-    
+
+
       .drawer-list {
         box-sizing: border-box;
         width: 100%;
@@ -70,11 +75,12 @@ class MyApp extends connect
     
       .main-content {
         padding-top: 64px;
-        min-height: 100vh;
       }
     
       .page {
         display: none;
+        overflow: auto;
+        min-height: calc(100vh - 64px);
       }
     
       .page[active] {
@@ -111,37 +117,49 @@ class MyApp extends connect
       #searchInput[active] {
         width: 100%;
         opacity: 1;
+        padding: 0 23px;
       }
     
       @media (min-width: 460px) {}
     </style>
     
     <app-header reveals>
-      <app-toolbar>
+      <app-toolbar class="inner">
         <style>
         </style>
         <input id="searchInput" type="search" placeholder="search..." active?="${searchMode}" on-blur="${_ => this.leaveSearchMode()}"
-          on-search="${e => this.search(e.target.value)}"> ${menuAddon}
+          on-search="${e => this.search(e.target.value)}">
+
+        ${true ? html`
+          <mwc-icon id="menuToggler" on-click="${_ => store.dispatch(updateDrawerState(true))}">menu</mwc-icon>
+        ` : ''}
     
         <div main-title>${_appBarTitle}</div>
     
-        ${searchAddon}
+        ${true ? html`
+        <mwc-icon on-click="${_ => this.enterSearchMode()}">search</mwc-icon>
+        ` : ''}
+
+
       </app-toolbar>
     </app-header>
     
     <app-drawer opened?="${_drawerOpened}" on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
       <nav class="drawer-list">
-        <a selected?="${_page === 'view1'}" href="/view1">View One</a>
+        <a selected?="${_page === 'home'}" href="/home">Home</a>
         <a selected?="${_page === 'view2'}" href="/view2">View Two</a>
       </nav>
     </app-drawer>
     
     
     <main class="main-content">
-      <my-view1 class="page" active?="${_page === 'view1'}"></my-view1>
+      <my-view1 class="page" active?="${_page === 'home'}"></my-view1>
       <my-view2 class="page" active?="${_page === 'view2'}"></my-view2>
       <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
     </main>
+
+
+    <paper-toast id="toaster"></paper-toast>
     `;
   }
   static get properties() {
@@ -163,15 +181,20 @@ class MyApp extends connect
     super();
     this.searchMode = false;
     if (this.getAttribute('appTitle')) {
-      window.updateAppBarTitle(this.getAttribute('appTitle'));
+      store.dispatch(updateAppBarTitle(this.getAttribute('appTitle')));
     }
   }
 
 
-  _firstRendered() {
-    installRouter(
-      (location) => store.dispatch(
-        navigate(window.decodeURIComponent(location.pathname))));
+  async _firstRendered() {
+    // $ helper
+    this.$ = {};
+    this.shadowRoot.querySelectorAll('[id]').forEach(e => { this.$[e.id] = e });
+
+    await this.renderCompletes;
+    toast = this.$.toaster;
+
+    installRouter((location) => store.dispatch(navigate(window.decodeURIComponent(location.pathname))));
   }
 
   async enterSearchMode() {

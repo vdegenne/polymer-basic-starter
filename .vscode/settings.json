@@ -1,3 +1,5 @@
 {
-  "clang-format.language.javascript.enable": false
+  "clang-format.language.javascript.enable": false,
+  "editor.formatOnSave": false,
+  "editor.formatOnPaste": false
 }

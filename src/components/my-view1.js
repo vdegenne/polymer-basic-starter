@@ -19,16 +19,18 @@ class MyView1 extends connect(store)(LitElement) {
         --mdc-theme-on-primary: white;
       }
     </style>
-    <h1>view 1</h1>
-    <p>If you see this view, it means you successfully installed the
-      <code>polymer-basic-starter</code> starter.</p>
-    <a href="/view2">
-      <mwc-button label="Go on view2" raised></mwc-button>
-    </a>
-    
-    <a href="/404">
-      <mwc-button label="be 404" raised></mwc-button>
-    </a>
+    <div class="inner">
+      <h1>view 1</h1>
+      <p>If you see this view, it means you successfully installed the
+        <code>polymer-basic-starter</code> starter.</p>
+      <a href="/view2">
+        <mwc-button label="View2" raised></mwc-button>
+      </a>
+      
+      <a href="/404">
+        <mwc-button label="Go 404" raised></mwc-button>
+      </a>
+    </div>
     `;
   }
   static get properties() {
@@ -36,7 +38,6 @@ class MyView1 extends connect(store)(LitElement) {
 
     }
   }
-
   _stateChanged(state) {
 
   }

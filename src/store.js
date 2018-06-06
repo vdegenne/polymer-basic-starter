@@ -3,6 +3,8 @@ import { applyMiddleware, combineReducers, compose as origCompose, createStore }
 import thunk from 'redux-thunk';
 
 import app from './reducers/app.js';
+import data from './reducers/data';
+
 
 // Sets up a Chrome extension for time travel debugging.
 // See https://github.com/zalmoxisus/redux-devtools-extension for more
@@ -19,6 +21,4 @@ export const store = createStore(
   compose(lazyReducerEnhancer(combineReducers), applyMiddleware(thunk)));
 
 // Initially loaded reducers.
-store.addReducers({ app });
-
-window.store = store;
+store.addReducers({ app, data });
