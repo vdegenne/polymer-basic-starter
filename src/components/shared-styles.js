@@ -33,7 +33,7 @@ export const SharedStyles = html`
     }
 
     mwc-button {
-      --mdc-theme-primary: var(--app-second-color);
+      --mdc-theme-primary: var(--app-primary-color);
       margin-bottom: 6px;
     }
   </style>

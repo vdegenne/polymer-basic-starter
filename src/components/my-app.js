@@ -25,7 +25,7 @@ class MyApp extends connect(store)(LitElement) {
     ${SharedStyles}
     <style>
       :host {
-        --app-primary-color: #424242;
+        --app-primary-color: #4a2f5f;
         --app-second-color: #29462a;
         --app-header-background-color: var(--app-primary-color);
         --app-header-text-color: #ffffff;
@@ -75,16 +75,25 @@ class MyApp extends connect(store)(LitElement) {
     
       .main-content {
         padding-top: 64px;
+        min-height: calc(100vh - 97px);
       }
     
       .page {
         display: none;
         overflow: auto;
-        min-height: calc(100vh - 64px);
+        padding-bottom: 32px;
       }
     
       .page[active] {
         display: block;
+      }
+
+      footer {
+        font-size: 0.7em;
+        padding: 10px 0;
+        background: var(--paper-grey-700);
+        color: #fff;
+        text-align: center;
       }
     
       mwc-icon {
@@ -158,6 +167,9 @@ class MyApp extends connect(store)(LitElement) {
       <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
     </main>
 
+    <footer>
+      <span>Made with </span><span>♡</span><span> for free learners</span>
+    </footer>
 
     <paper-toast id="toaster"></paper-toast>
     `;
@@ -180,9 +192,14 @@ class MyApp extends connect(store)(LitElement) {
   constructor() {
     super();
     this.searchMode = false;
+
+    // set the app-header title
     if (this.getAttribute('appTitle')) {
       store.dispatch(updateAppBarTitle(this.getAttribute('appTitle')));
     }
+
+    // make the toast function a module import
+    toast = this.toast.bind(this);
   }
 
 
@@ -191,8 +208,7 @@ class MyApp extends connect(store)(LitElement) {
     this.$ = {};
     this.shadowRoot.querySelectorAll('[id]').forEach(e => { this.$[e.id] = e });
 
-    await this.renderCompletes;
-    toast = this.$.toaster;
+    // toast = this.toast.bind(this);
 
     installRouter((location) => store.dispatch(navigate(window.decodeURIComponent(location.pathname))));
   }
@@ -215,6 +231,12 @@ class MyApp extends connect(store)(LitElement) {
     else {
       this.searchMode = false;
     }
+  }
+
+  toast(text, fail = false) {
+    this.$.toaster.style.background = fail ? 'var(--paper-red-700)' : '';
+    this.$.toaster.text = text;
+    this.$.toaster.open();
   }
 }
 

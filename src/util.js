@@ -15,7 +15,7 @@ export function purifyFormObject(object, nullToUndefined = true, emptyStringToUn
 }
 
 
-function createMap(object, id = 'id') {
+export function createMap(object, id = 'id') {
   const map = {};
   for (const e of object) {
     map[e[id]] = e;
