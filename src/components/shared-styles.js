@@ -1,40 +1,46 @@
-import { html } from "@polymer/lit-element";
+import {html} from '@polymer/lit-element';
 
 export const SharedStyles = html`
-  <style>
-    :host > *:first-of-type {
-      margin-top: 0;
-    }
+<style>
+  [show] {
+    display: initial;
+  }
+  [hide] {
+    display: none !important;
+  }
+  [transparent] {
+    visibility: hidden;
+  }
+  [visible] {
+    visibility: visible !important;
+  }
 
-    .inner {
-      max-width: var(--inner-width, 700px);
-      margin-left: auto;
-      margin-right: auto;
-      padding-left: 20px;
-      padding-right: 20px;
-    }
+  mwc-icon {
+    cursor: pointer;
+    user-select: none;
+  }
 
-    paper-dialog > h2:first-of-type {
-      margin-top: 16px;
-      padding: 0 16px;
-    }
+  mwc-button {
+    --mdc-theme-primary: var(--paper-blue-700);
+  }
 
-    paper-dialog > .buttons {
-      padding: 16px 16px 7px;
-    }
-    paper-dialog > .buttons > mwc-button {
-      margin-left: 5px;
-    }
+  .middle {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
 
-    paper-dialog paper-input {
-      --paper-input-container: {
-        padding-top: 0;
-      }
-    }
+  .inner {
+    max-width: var(--inner-width, 700px);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 
-    mwc-button {
-      --mdc-theme-primary: var(--app-primary-color);
-      margin-bottom: 6px;
-    }
-  </style>
-`;
+  [highlight] {
+    background: #ffeb3b;
+    /* color: #000; */
+  }
+</style>`;

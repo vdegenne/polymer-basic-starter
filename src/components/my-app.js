@@ -1,244 +1,240 @@
-import '@polymer/app-layout/app-header/app-header';
-import '@polymer/app-layout/app-toolbar/app-toolbar';
-import '@polymer/app-layout/app-drawer/app-drawer';
-import '@polymer/paper-styles/paper-styles';
-import '@material/mwc-icon';
-import '@material/mwc-button';
-import '@polymer/paper-toast/paper-toast';
-
-
-import { html, LitElement } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers';
-import { installRouter } from 'pwa-helpers';
-import {SharedStyles} from './shared-styles';
-import { navigate, updateDrawerState, updateAppBarTitle } from '../actions/app';
+import { LitElement, html } from "@polymer/lit-element";
+import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
+import { connect } from "pwa-helpers/connect-mixin.js";
+import { installRouter } from 'pwa-helpers/router.js'
 import { store } from '../store';
+import { navigate } from "../actions/app";
+import { updateMetadata } from 'pwa-helpers/metadata.js';
+import { SharedStyles } from "./shared-styles";
 
+/* elements */
+import '@material/mwc-icon/mwc-icon.js';
+import '@polymer/app-layout/app-drawer/app-drawer.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/paper-toast/paper-toast.js';
+import '@polymer/paper-styles/paper-styles.js';
 
-export let toast;
+/* prefetched views */
+import './home-view.js';
+import './not-found-view.js';
+import { triggerKeys, toast } from "../util";
+
 
 class MyApp extends connect(store)(LitElement) {
-  
-  _render({ _appBarTitle, searchMode, _page, _drawerOpened }) {
+  static get properties () { return {
+    appTitle: { type: String },
+    _drawerOpened: { type: Boolean },
+    _page: { type: String },
+    _searchMode: { type: Boolean }
+  }}
 
+  constructor() {
+    super();
+    this._registerEvents();
+    setPassiveTouchGestures(true);
+  }
+  stateChanged(state) {
+    this._page = state.app.page;
+  }
+
+  _registerEvents () {
+    /* click */
+    this.addEventListener('click', (e) => {
+      if (e.path[0].id !== 'searchInput' && e.path[2].id !== 'searchbutton') {
+        this._searchMode = false;
+      }
+    });
+    /* keypress */
+    window.addEventListener('keydown', (e) => {
+      if (e.altKey) { return }
+      if (this._searchMode) { return }
+      if ((!e.ctrlKey && triggerKeys.includes(e.keyCode)) || e.ctrlKey && e.keyCode === 86) {
+        this.search();
+        window.scrollTo(0, 0);
+      }
+    });
+  }
+
+  render () {
     return html`
     ${SharedStyles}
     <style>
       :host {
-        --app-primary-color: #4a2f5f;
-        --app-second-color: #29462a;
-        --app-header-background-color: var(--app-primary-color);
-        --app-header-text-color: #ffffff;
-    
-        --app-drawer-background-color: #f5f5f5;
-        --app-drawer-text-color: #757575;
-        --app-drawer-selected-color: #212121;
+        --app-header-background-color: var(--paper-blue-700);
       }
-    
+
       app-header {
         position: fixed;
         top: 0;
-        left: 0;
         width: 100%;
+        /* text-align: center; */
         background-color: var(--app-header-background-color);
-        color: var(--app-header-text-color);
-      }
-    
-      app-drawer {
-        z-index: 100;
+        color: #fff;
+        border-bottom: 1px solid #eee;
       }
 
-
-      .drawer-list {
-        box-sizing: border-box;
-        width: 100%;
-        height: 100%;
-        padding: 24px;
-        background: var(--app-drawer-background-color);
+      app-toolbar {
         position: relative;
       }
-    
-      .drawer-list>a {
-        display: block;
-        text-decoration: none;
-        color: var(--app-drawer-text-color);
-        line-height: 40px;
-        padding: 0 24px;
-    
-        outline: none;
-      }
-    
-      .drawer-list>a[selected] {
-        font-weight: bold;
-        color: var(--app-drawer-selected-color);
-      }
-    
-      .main-content {
-        padding-top: 64px;
-        min-height: calc(100vh - 97px);
-      }
-    
-      .page {
-        display: none;
-        overflow: auto;
-        padding-bottom: 32px;
-      }
-    
-      .page[active] {
-        display: block;
+
+      [main-title] {
+        margin-left: 12px;
       }
 
-      footer {
-        font-size: 0.7em;
-        padding: 10px 0;
-        background: var(--paper-grey-700);
-        color: #fff;
-        text-align: center;
-      }
-    
-      mwc-icon {
-        cursor: pointer;
-      }
-    
-      #menuToggler {
-        margin-right: 15px;
-      }
-    
       #searchInput {
         position: absolute;
         top: 0;
         bottom: 0;
-        right: 0;
-        padding: 10px;
-        font-size: 1em;
-        border: none;
-    
-        background: var(--app-header-background-color);
-        color: var(--app-header-text-color);
-        outline: none;
-    
-        /* for the stretch effect */
-        transition: all .1s ease-out;
-        width: 0%;
-        opacity: 0;
-      }
-    
-      #searchInput[active] {
+        left: 0;
         width: 100%;
-        opacity: 1;
-        padding: 0 23px;
+        box-sizing: border-box;
+        padding: 24px;
+        background: var(--app-header-background-color);
+        color: #fff;
+        border: none;
       }
-    
-      @media (min-width: 460px) {}
+      #searchInput::placeholder {
+        color: rgba(255, 255, 255, .6);
+      }
+      #searchInput::-webkit-search-cancel-button {
+        display: none;
+      }
+      #searchbutton {
+        z-index: 4;
+      }
+
+      app-drawer {
+        z-index: 4;
+      }
+
+      #drawer-list {
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        padding: 24px;
+        background: #fff;
+        position: relative;
+      }
+
+      #drawer-list > a {
+        display: block;
+        text-decoration: none;
+        color: #121212;
+        line-height: 40px;
+        padding: 0 24px;
+      }
+
+      #drawer-list > a[selected] {
+        font-weight: 900;
+        color: var(--paper-blue-700);
+      }
+
+      main {
+        display: block;
+        padding-top: 64px;
+        min-height: calc(100vh - 106px);
+      }
+
+      main > * {
+        display: none;
+      }
+
+      main > *[active] {
+        display: block;
+        padding-bottom: 30px;
+        overflow: auto;
+      }
+
+      footer {
+        height: 42px;
+        background: var(--paper-grey-600);
+        color: #fff;
+      }
     </style>
     
-    <app-header reveals>
+    <app-header condenses>
       <app-toolbar class="inner">
-        <style>
-        </style>
-        <input id="searchInput" type="search" placeholder="search..." active?="${searchMode}" on-blur="${_ => this.leaveSearchMode()}"
-          on-search="${e => this.search(e.target.value)}">
-
-        ${true ? html`
-          <mwc-icon id="menuToggler" on-click="${_ => store.dispatch(updateDrawerState(true))}">menu</mwc-icon>
-        ` : ''}
-    
-        <div main-title>${_appBarTitle}</div>
-    
-        ${true ? html`
-        <mwc-icon on-click="${_ => this.enterSearchMode()}">search</mwc-icon>
-        ` : ''}
-
-
+        <input id="searchInput" type="search" placeholder="type something..." @search="${this.search}" ?hide="${!this._searchMode}">
+        <mwc-icon @click="${() => this._drawerOpened = true}">menu</mwc-icon>
+        <div main-title>${this.appTitle}</div>
+        <mwc-icon id="searchbutton" @click="${this.search}">search</mwc-icon>
       </app-toolbar>
     </app-header>
-    
-    <app-drawer opened?="${_drawerOpened}" on-opened-changed="${e => store.dispatch(updateDrawerState(e.target.opened))}">
-      <nav class="drawer-list">
-        <a selected?="${_page === 'home'}" href="/home">Home</a>
-        <a selected?="${_page === 'view2'}" href="/view2">View Two</a>
+
+    <!-- Drawer content -->
+    <app-drawer .opened="${this._drawerOpened}" @opened-changed="${e => this._drawerOpened = e.detail.value}" @click="${e => this._drawerOpened = false}">
+      <nav id="drawer-list">
+        <a ?selected="${this._page === 'home'}" href="/home">home</a>
+        <a ?selected="${this._page === '404'}" href="/deadend">404</a>
       </nav>
     </app-drawer>
-    
-    
-    <main class="main-content">
-      <my-view1 class="page" active?="${_page === 'home'}"></my-view1>
-      <my-view2 class="page" active?="${_page === 'view2'}"></my-view2>
-      <my-view404 class="page" active?="${_page === 'view404'}"></my-view404>
+
+    <!-- Main content -->
+    <main role="main">
+      <home-view ?active="${this._page === 'home'}"></home-view>
+      <not-found-view ?active="${this._page === '404'}"></not-found-view>
     </main>
 
-    <footer>
-      <span>Made with </span><span>♡</span><span> for free learners</span>
+    <footer class="middle">
+      <span>&copy; ${(new Date).getFullYear()} %appname%</span>
     </footer>
 
     <paper-toast id="toaster"></paper-toast>
     `;
   }
-  static get properties() {
-    return {
-      appTitle: String,
-      searchMode: Boolean,
-      _page: String,
-      _appBarTitle: String,
-      _drawerOpened: Boolean
-    }
-  }
-  _stateChanged(state) {
-    this._page = state.app.page;
-    this._appBarTitle = state.app.appBarTitle;
-    this._drawerOpened = state.app.drawerOpened;
-  }
 
-  constructor() {
-    super();
-    this.searchMode = false;
-
-    // set the app-header title
-    if (this.getAttribute('appTitle')) {
-      store.dispatch(updateAppBarTitle(this.getAttribute('appTitle')));
+  updated(changedProps) {
+    if (changedProps.has('_searchMode') && changedProps.get('_searchMode')) {
+      this.shadowRoot.getElementById('searchInput').value = '';
     }
 
-    // make the toast function a module import
-    toast = this.toast.bind(this);
-  }
-
-
-  async _firstRendered() {
-    // $ helper
-    this.$ = {};
-    this.shadowRoot.querySelectorAll('[id]').forEach(e => { this.$[e.id] = e });
-
-    // toast = this.toast.bind(this);
-
-    installRouter((location) => store.dispatch(navigate(window.decodeURIComponent(location.pathname))));
-  }
-
-  async enterSearchMode() {
-    this.searchMode = true;
-    await this.renderCompletes;
-    this.shadowRoot.querySelector('#searchInput').focus();
-  }
-
-  async leaveSearchMode() {
-    this.searchMode = false;
-    await this.renderCompletes;
-  }
-
-  search(query) {
-    if (query) {
-      alert(`Search ${query}...`);
-    }
-    else {
-      this.searchMode = false;
+    if (changedProps.has('_page')) {
+      const pageTitle = this.appTitle + ' - ' + this._page;
+      updateMetadata({
+        title: pageTitle,
+        description: pageTitle
+      });
     }
   }
 
-  toast(text, fail = false) {
-    this.$.toaster.style.background = fail ? 'var(--paper-red-700)' : '';
-    this.$.toaster.text = text;
-    this.$.toaster.open();
+  firstUpdated() {
+    window.toaster = this.shadowRoot.getElementById('toaster');
+
+    window.changeLocation = (location) => {
+      let path = decodeURIComponent(location.pathname || location);
+      if (path[0] !== '/') { path = '/' + path }
+      if (this.path && this.path === path) {
+        return;
+      }
+      this.path = path;
+      if (!location.pathname) {
+        history.pushState({}, '', path);
+      }
+      let queryIndex = path.indexOf('?');
+      store.dispatch(navigate(queryIndex >= 0 ? path.substr(0, queryIndex) : path));
+      // gtag('config', window.gtagid, { 'page_path': path });
+      window.dispatchEvent(new CustomEvent('locationChanged'));
+    };
+    installRouter(window.changeLocation);
+  }
+
+  async search () {
+    const input = this.shadowRoot.getElementById('searchInput');
+    if (!this._searchMode) {
+      this._searchMode = true;
+      await this.updateComplete;
+      input.focus();
+      return;
+    }
+    /* implement */
+    if (input.value) {
+      toast(input.value);
+    }
+
+    input.value = '';
+    this._searchMode = false;
   }
 }
-
 
 window.customElements.define('my-app', MyApp);

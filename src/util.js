@@ -1,24 +1,97 @@
-export function purifyFormObject(object, nullToUndefined = true, emptyStringToUndefined = true) {
-  for (const p in object) {
-    if (object[p] === null && nullToUndefined) {
-      object[p] = undefined;
-    }
-    if (object[p] === '' && emptyStringToUndefined) {
-      object[p] = undefined;
-    }
 
-    // convert string number to number
-    if (parseInt(object[p]).toString() === object[p]) {
-      object[p] = parseInt(object[p]);
+export const triggerKeys = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 81, 87, 69, 82, 84, 89, 85, 73, 79, 80, 65, 83, 68, 70, 71, 72, 74, 75, 76, 90, 88, 67, 86, 66, 78, 77];
+
+
+export const purify = {};
+purify.EMPTY_STRING_TO_UNDEFINED = 'EMPTY_STRING_TO_UNDEFINED';
+purify.NULL_TO_UNDEFINED = 'NULL_TO_UNDEFINED';
+purify.UNDEFINED_TO_NULL = 'UNDEFINED_TO_NULL';
+purify.STRING_TO_NUMBER = 'STRING_TO_NUMBER';
+purify.formObject = function (object, ...options) {
+  for (const p in object) {
+    for (const o of options) {
+      switch (o) {
+        case this.EMPTY_STRING_TO_UNDEFINED:
+          if (object[p] === '') {
+            object[p] = undefined;
+          }
+          break;
+        case this.NULL_TO_UNDEFINED:
+          if (object[p] === null) {
+            object[p] = undefined;
+          }
+          break;
+        case this.UNDEFINED_TO_NULL:
+          if (object[p] === undefined) {
+            object[p] = null;
+          }
+          break;
+        case this.STRING_TO_NUMBER:
+          if (parseInt(object[p]).toString() === object[p]) {
+            object[p] = parseInt(object[p]);
+          }
+          break;
+      }
     }
   }
-}
+};
 
-
-export function createMap(object, id = 'id') {
+export const createMap = (object, id = 'id') => {
   const map = {};
   for (const e of object) {
     map[e[id]] = e;
   }
   return map;
-}
+};
+
+export const copyToClipboard = (text) => {
+  const el = document.createElement('textarea');
+  el.value = text;//this._hanmun.symbol;
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+  toast('Copied to clipboard !');
+};
+
+export const whenPropIsReady = (object, prop) => {
+  return new Promise((resolve) => {
+    let _check;
+    (_check = () => {
+      if (object[prop] === null || object[prop] === undefined) {
+        setTimeout(_check, 100);
+      }
+      else {
+        resolve(object[prop]);
+      }
+    })();
+  })
+};
+export const whenWindowPropIsReady = (prop) => whenPropIsReady(window, prop);
+
+
+export const toast = async (msg, type = 0, duration = 3000) => {
+  await whenWindowPropIsReady('toaster');
+  if (window.toaster) {
+    window.toaster.duration = duration;
+    switch (type) {
+      case 0: /* neutral */
+        window.toaster.style.background = '';
+        break;
+      case 1: /* success */
+        window.toaster.style.background = 'var(--google-green-700)';
+        break;
+      case 2: /* error */
+        window.toaster.style.background = 'var(--paper-red-800)';
+        break;
+    }
+    window.toaster.text = msg;
+    window.toaster.open();
+  }
+};
+
+export const getUrlParts = (url) => {
+  url = url.replace(/^\/*|\/*$/g, '');
+  const parts = decodeURIComponent(url).split('/');
+  return {url, parts};
+};

@@ -2,34 +2,21 @@
   "entrypoint": "index.html",
   "shell": "src/components/%appname%.js",
   "sources": [
-    "images/**/*"
+    "images/**/*",
+    "fonts/**/*"
   ],
   "extraDependencies": [
     "manifest.json",
     "node_modules/@webcomponents/webcomponentsjs/**",
     "push-manifest.json"
   ],
+  "moduleResolution": "node",
+  "npm": true,
   "builds": [
     {
-      "name": "es6-bundled",
-      "browserCapabilities": [
-        "es2015"
-      ],
-      "js": {
-        "compile": "es2015",
-        "minify": true,
-        "transformModulesToAmd": true
-      },
-      "css": {
-        "minify": true
-      },
-      "html": {
-        "minify": true
-      },
-      "bundle": true,
-      "addServiceWorker": true
+      "name": "es6prod",
+      "preset": "es6-bundled",
+      "addServiceWorker": false
     }
-  ],
-  "moduleResolution": "node",
-  "npm": true
+  ]
 }
