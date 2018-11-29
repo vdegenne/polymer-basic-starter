@@ -2,10 +2,14 @@ export const UPDATE_PAGE = 'UPDATE_PAGE';
 
 export const navigate = (path) => (dispatch) => {
 
-  let uri = path.slice(1) || 'home',
-      parts = uri.split('/');
+  let page = path.slice(1) || 'home',
+      parts = page.split('/');
 
-  dispatch(loadPage(uri));
+  if (getState().app.page === page) {
+    return;
+  }
+
+  dispatch(loadPage(page));
 };
 
 

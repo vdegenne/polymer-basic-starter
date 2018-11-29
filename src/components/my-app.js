@@ -214,7 +214,7 @@ class MyApp extends connect(store)(LitElement) {
       let queryIndex = path.indexOf('?');
       store.dispatch(navigate(queryIndex >= 0 ? path.substr(0, queryIndex) : path));
       // gtag('config', window.gtagid, { 'page_path': path });
-      window.dispatchEvent(new CustomEvent('locationChanged'));
+      window.dispatchEvent(new CustomEvent('locationChanged', { detail: { path, popstate: e ? e.type === 'popstate' : false } }));  
     };
     installRouter(window.changeLocation);
   }

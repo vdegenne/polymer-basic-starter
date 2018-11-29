@@ -1,3 +1,35 @@
+export const GET = 'GET';
+export const POST = 'POST';
+export const PUT = 'PUT';
+export const DELETE = 'DELETE';
+
+export const fetchJson = async (url) => await (await fetch(url, { credentials: 'include' })).json();
+
+export const post = async (url, object) => await (await fetch(
+  url,
+  {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(object)
+  }
+)).json();
+
+
+export const rest = async (url, method = GET, body) => {
+  const init = { method };
+
+  if (method === POST || method === PUT) {
+    init.credentials = 'include';
+    if (body) {
+      init.headers = { 'content-type': 'application/json' };
+      init.body = JSON.stringify(body);
+    }
+  }
+  return await (await fetch(url, init)).json();
+}
 
 export const triggerKeys = [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 81, 87, 69, 82, 84, 89, 85, 73, 79, 80, 65, 83, 68, 70, 71, 72, 74, 75, 76, 90, 88, 67, 86, 66, 78, 77];
 
